@@ -41,7 +41,7 @@
 
 
 install:
-	cp -f frame-merger.py /usr/local/bin/frame-merger
+	cp -f framemerger.py /usr/local/bin/frame-merger
 	chmod 744 /usr/local/bin/frame-merger
 
 uninstall:
