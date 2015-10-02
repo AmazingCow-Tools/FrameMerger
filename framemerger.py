@@ -50,6 +50,7 @@ import termcolor;
 #COWTODO: Today we're using pygame to merge the photos.
 #COWTODO: But the desired is to use ImageMagick...
 import pygame;
+#For GUI :)
 from PyQt4.QtCore import *
 from PyQt4.QtGui  import *
 
@@ -60,6 +61,7 @@ class Constants:
     #Flag.
     FLAG_HELP             = "h", "help";
     FLAG_VERSION          = "v", "version";
+    FLAG_GUI              = "" , "gui";
     FLAG_FRAME_IMAGE_PATH = "f", "frame";
     FLAG_IMAGES_DIR_PATH  = "i", "images-dir";
     FLAG_OUTPUT_DIR_PATH  = "o", "output-dir";
@@ -68,12 +70,13 @@ class Constants:
     ALL_FLAGS_LONG  = [
         FLAG_HELP            [1],
         FLAG_VERSION         [1],
+        FLAG_GUI             [1],
         FLAG_FRAME_IMAGE_PATH[1] + "=",
         FLAG_IMAGES_DIR_PATH [1] + "=",
         FLAG_OUTPUT_DIR_PATH [1] + "="
     ];
 
-    #Image formats
+    #Image formats.
     IMAGE_FORMATS = [".png", ".jpg", ".jpeg"];
 
     #App.
@@ -189,13 +192,8 @@ class GUI(QWidget):
         self.root_layout.addWidget(self.output_dir_label,  5, 1);
         self.root_layout.addWidget(self.output_dir_text,   6, 1);
         self.root_layout.addWidget(self.output_dir_button, 6, 2);
-
+        #Merge Button.
         self.root_layout.addWidget(self.run_button, 7, 1, 2, 1 );
-
-        #COWTODO: Remove...s
-        self.frame_image_text.setText("/Users/mesquitax/Desktop/frame.png");
-        self.images_dir_text.setText("/Users/mesquitax/Desktop/t1");
-        self.output_dir_text.setText("/Users/mesquitax/Desktop/OLA");
 
 
     ############################################################################
@@ -214,6 +212,7 @@ class GUI(QWidget):
         self.frame_image_text.setText(file_selected);
 
     def on_images_dir_button_pressed(self):
+        #COWTODO: Comment.
         dir_selected = QFileDialog.getExistingDirectory(self,
                                                         "Select Images Directory",
                                                         "",
@@ -221,6 +220,7 @@ class GUI(QWidget):
         self.images_dir_text.setText(dir_selected);
 
     def on_output_dir_button_pressed(self):
+        #COWTODO: Comment.
         dir_selected = QFileDialog.getExistingDirectory(self,
                                                         "Select Ouput Directory",
                                                         "",
@@ -228,6 +228,7 @@ class GUI(QWidget):
         self.output_dir_text.setText(dir_selected);
 
     def on_run_button_pressed(self):
+        #COWTODO: Comment.
         try:
             #Create and setup the MergeProcess..
             merge_process = MergeProcess();
@@ -266,16 +267,19 @@ class GUI(QWidget):
                                     "Processing complete...",
                                     QMessageBox.Ok);
 
+        #COWTODO: Comment.
         except Exception, e:
             QMessageBox. critical(self,
                                   "Frame Merger",
                                   str(e),
                                   QMessageBox.Ok);
 
+
     ############################################################################
     ## Text Box Callbacks                                                     ##
     ############################################################################
     def on_text_changed(self):
+        #COWTODO: Comment.
         frame_len  = len(self.frame_image_text.text());
         images_len = len(self.images_dir_text.text());
         output_len = len(self.output_dir_text.text());
@@ -293,6 +297,7 @@ class MergeProcess:
     ## CTOR                                                                   ##
     ############################################################################
     def __init__(self):
+        #COWTODO: Comment.
         self.__frame_path  = None;
         self.__images_path = None;
         self.__output_path = None;
@@ -304,6 +309,7 @@ class MergeProcess:
     ## Initializer Method                                                     ##
     ############################################################################
     def init(self):
+        #COWTODO: Comment.
         self.__check_paths();
         self.__clean_images_filenames_list();
 
@@ -338,6 +344,7 @@ class MergeProcess:
     ## Action Method                                                          ##
     ############################################################################
     def merge(self):
+        #COWTODO: Comment.
         image_filename = self.__images_filenames[self.__current_photo_index];
 
         image_fullpath  = os.path.join(self.__images_path, image_filename);
@@ -351,17 +358,32 @@ class MergeProcess:
     ## Helper Methods                                                         ##
     ############################################################################
     def __check_paths(self):
-        if(not os.path.isfile(self.__frame_path)):
+        #COWTODO: Comment.
+        #Canonize the paths...
+        self.__frame_path  = self.__canonize_path(self.__frame_path);
+        self.__images_path = self.__canonize_path(self.__images_path);
+        self.__output_path = self.__canonize_path(self.__output_path);
+
+        #COWTODO: Comment.
+        if(self.__frame_path is None or not os.path.isfile(self.__frame_path)):
             raise Exception("Frame Image Path is not a valid.");
 
-        if(not os.path.isdir(self.__images_path)):
+        if(self.__images_path is None or not os.path.isdir(self.__images_path)):
             raise Exception("Images Dir Path is not a valid.");
 
+        if(self.__output_path is None):
+            raise Exception("Output Dir Path is not a valid.");
+
+    def __canonize_path(self, path):
+        if(path is None): return None;
+
+        return os.path.abspath(os.path.expanduser(path));
 
     def __clean_images_filenames_list(self):
         #COWTODO: Comment.
         clean_filenames = [];
 
+        #COWTODO: Comment.
         filenames = os.listdir(self.__images_path);
         for filename in filenames:
             name, ext = os.path.splitext(filename);
@@ -381,6 +403,7 @@ class MergeProcess:
 
             pygame.image.save(image_surface, output_filename);
 
+        #COWTODO: Comment.
         except Exception, e:
             msg = "{} ({}) - Exception: {}".format("Error while merging photo",
                                                    input_filename,
@@ -432,19 +455,17 @@ def print_fatal(msg):
 ## Helper Functions                                                           ##
 ################################################################################
 def system_cmd(cmd, expected_ret_val = 0):
+    #COWTODO: Comment.
     ret = os.system(cmd);
     if(ret != expected_ret_val):
         print_fatal("cmd:", cmd);
 
-def expand_path(path):
-    return os.path.abspath(os.path.expanduser(path));
-
-
 def run(frame_path, images_path, output_path):
+    #COWTODO: Comment.
     try:
         merge_process = MergeProcess();
 
-        merge_process.set_frame_path(frame_path);
+        merge_process.set_frame_path (frame_path);
         merge_process.set_images_path(images_path);
         merge_process.set_output_path(output_path);
 
@@ -457,6 +478,8 @@ def run(frame_path, images_path, output_path):
                                             merge_process.get_images_count());
             merge_process.merge();
         print "Done...";
+
+    #COWTODO: Comment.
     except Exception, e:
         print_fatal(str(e));
 
@@ -465,45 +488,47 @@ def run(frame_path, images_path, output_path):
 ## Script Initialization                                                      ##
 ################################################################################
 def main():
-    run("/Users/mesquitax/Desktop/frame.png",
-        "/Users/mesquitax/Desktop/t1",
-        "/Users/mesquitax/Desktop/OLA");
+    #Get the command line options.
+    try:
+        options = getopt.gnu_getopt(sys.argv[1:],
+                                    Constants.ALL_FLAGS_SHORT,
+                                    Constants.ALL_FLAGS_LONG);
+    except Exception, e:
+        print_fatal(e);
 
-    # GUI.run();
-    # #Get the command line options.
-    # try:
-    #     options = getopt.gnu_getopt(sys.argv[1:],
-    #                                 Constants.ALL_FLAGS_SHORT,
-    #                                 Constants.ALL_FLAGS_LONG);
-    # except Exception, e:
-    #     print_fatal(e);
+    #COWTODO: Comment.
+    opt_frame_image_path = None;
+    opt_images_dir_path  = None;
+    opt_output_dir_path  = None;
 
-    # #Parse the options.
-    # for option in options[0]:
-    #     key, value = option;
-    #     key = key.lstrip("-");
+    #Parse the options.
+    for option in options[0]:
+        key, value = option;
+        key = key.lstrip("-");
 
-    #     #Help/Version.
-    #     if  (key in Constants.FLAG_HELP   ): print_help();
-    #     elif(key in Constants.FLAG_VERSION): print_version();
+        #Help/Version. - EXCLUSIVE OPTIONS : Run and quit.
+        if  (key in Constants.FLAG_HELP   ): print_help();
+        elif(key in Constants.FLAG_VERSION): print_version();
 
-    #     #Frame and Images path.
-    #     elif(key in Constants.FLAG_FRAME_IMAGE_PATH):
-    #          Globals.frame_image_path = value;
-    #     elif(key in Constants.FLAG_IMAGES_DIR_PATH):
-    #          Globals.images_dir_path = value;
+        #GUI - EXCLUSIVE OPTION : Run and quit.
+        elif(key in Constants.FLAG_GUI):
+            GUI.run();
+            exit(0);
 
-    #     #Output path.
-    #     elif(key in Constants.FLAG_OUTPUT_DIR_PATH):
-    #         Globals.output_dir_path = value;
+        #NON EXCLUSIVE OPTIONS : Grab the info to use later.
+        #Frame and Images path.
+        elif(key in Constants.FLAG_FRAME_IMAGE_PATH):
+             opt_frame_image_path = value;
+        elif(key in Constants.FLAG_IMAGES_DIR_PATH):
+             opt_images_dir_path = value;
+        #Output path.
+        elif(key in Constants.FLAG_OUTPUT_DIR_PATH):
+            opt_output_dir_path = value;
 
-
-    # #COWTODO: Perform sanity check on values.
-    # Globals.frame_image_path = expand_path(Globals.frame_image_path);
-    # Globals.images_dir_path  = expand_path(Globals.images_dir_path);
-    # Globals.output_dir_path  = expand_path(Globals.output_dir_path);
-
-    # run();
+    #Will run in text mode.
+    run(opt_frame_image_path,
+        opt_images_dir_path,
+        opt_output_dir_path);
 
 if(__name__ == "__main__"):
     main();
