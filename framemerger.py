@@ -50,14 +50,8 @@ import termcolor;
 #COWTODO: Today we're using pygame to merge the photos.
 #COWTODO: But the desired is to use ImageMagick...
 import pygame;
-
-################################################################################
-## Globals                                                                    ##
-################################################################################
-class Globals:
-    frame_image_path = None;
-    images_dir_path  = None;
-    output_dir_path  = None;
+from PyQt4.QtCore import *
+from PyQt4.QtGui  import *
 
 ################################################################################
 ## Constants                                                                  ##
@@ -89,6 +83,310 @@ class Constants:
     APP_COPYRIGHT = "\n".join(("Copyright (c) 2015 - Amazing Cow",
                                "This is a free software (GPLv3) - Share/Hack it",
                                "Check opensource.amazingcow.com for more :)"));
+
+
+
+################################################################################
+## GUI                                                                        ##
+################################################################################
+class GUI(QWidget):
+    ############################################################################
+    ## Static Run Method                                                      ##
+    ############################################################################
+    @staticmethod
+    def run():
+        app = QApplication(sys.argv);
+        gui = GUI();
+        gui.show();
+        sys.exit(app.exec_())
+
+
+    ############################################################################
+    ## CTOR                                                                   ##
+    ############################################################################
+    def __init__(self):
+        QWidget.__init__(self);
+
+        #Create the widgets.
+        self.frame_image_label  = None;
+        self.frame_image_text   = None;
+        self.frame_image_button = None;
+
+        self.images_dir_label  = None;
+        self.images_dir_text   = None;
+        self.images_dir_button = None;
+
+        self.output_dir_label  = None;
+        self.output_dir_text   = None;
+        self.output_dir_button = None;
+
+        self.run_button = None;
+
+        #Create the layout.
+        self.root_layout = None;
+
+        #Start the ui.
+        self.init_ui();
+
+
+    ############################################################################
+    ## UI Initializer                                                         ##
+    ############################################################################
+    def init_ui(self):
+        #Set the window properties.
+        self.setWindowTitle("{} - {} - {}".format(Constants.APP_NAME,
+                                                  Constants.APP_VERSION,
+                                                  "Amazing Cow"));
+        #Set the window properties.
+        self.setGeometry(0, 0, 480, 200);
+
+        #Create the widgets.
+        #Frame Image.
+        self.frame_image_label = QLabel("Frame Image Path:");
+
+        self.frame_image_text = QLineEdit();
+        self.frame_image_text.textChanged.connect(self.on_text_changed);
+
+        self.frame_image_button = QPushButton("...");
+        self.frame_image_button.clicked.connect(self.on_frame_image_button_pressed);
+
+        #Images Dir.
+        self.images_dir_label = QLabel("Images Directory Path:");
+
+        self.images_dir_text  = QLineEdit();
+        self.images_dir_text.textChanged.connect(self.on_text_changed);
+
+        self.images_dir_button = QPushButton("...");
+        self.images_dir_button.clicked.connect(self.on_images_dir_button_pressed);
+
+        #Ouput Dir.
+        self.output_dir_label = QLabel("Output Directory Path:");
+
+        self.output_dir_text  = QLineEdit();
+        self.output_dir_text.textChanged.connect(self.on_text_changed);
+
+        self.output_dir_button = QPushButton("...");
+        self.output_dir_button.clicked.connect(self.on_output_dir_button_pressed);
+
+        #Run Button.
+        self.run_button = QPushButton("Start merge!");
+        self.run_button.setEnabled(True);
+        self.run_button.clicked.connect(self.on_run_button_pressed);
+
+        #Create the layout.
+        self.root_layout = QGridLayout(self);
+
+        #Add the widgets to layout.
+        #Frame Image.
+        self.root_layout.addWidget(self.frame_image_label,  1, 1);
+        self.root_layout.addWidget(self.frame_image_text,   2, 1);
+        self.root_layout.addWidget(self.frame_image_button, 2, 2);
+        #Images Dir.
+        self.root_layout.addWidget(self.images_dir_label,  3, 1);
+        self.root_layout.addWidget(self.images_dir_text,   4, 1);
+        self.root_layout.addWidget(self.images_dir_button, 4, 2);
+        #Output Dir.
+        self.root_layout.addWidget(self.output_dir_label,  5, 1);
+        self.root_layout.addWidget(self.output_dir_text,   6, 1);
+        self.root_layout.addWidget(self.output_dir_button, 6, 2);
+
+        self.root_layout.addWidget(self.run_button, 7, 1, 2, 1 );
+
+        #COWTODO: Remove...s
+        self.frame_image_text.setText("/Users/mesquitax/Desktop/frame.png");
+        self.images_dir_text.setText("/Users/mesquitax/Desktop/t1");
+        self.output_dir_text.setText("/Users/mesquitax/Desktop/OLA");
+
+
+    ############################################################################
+    ## Button Callbacks                                                       ##
+    ############################################################################
+    def on_frame_image_button_pressed(self):
+        #Create a string with the supported image formats to pass to QFileDialog.
+        #The string will have the format of Images Files (*.FMT1 *.FMT2 *.FMTN)
+        #This is need to ensure that user will selected a valid image format.
+        image_formats_str = "Image Files (*{})".format(" *".join(Constants.IMAGE_FORMATS));
+        file_selected = QFileDialog.getOpenFileName(self,
+                                                    "Select Frame Image",
+                                                    "",
+                                                    image_formats_str);
+
+        self.frame_image_text.setText(file_selected);
+
+    def on_images_dir_button_pressed(self):
+        dir_selected = QFileDialog.getExistingDirectory(self,
+                                                        "Select Images Directory",
+                                                        "",
+                                                        QFileDialog.ShowDirsOnly);
+        self.images_dir_text.setText(dir_selected);
+
+    def on_output_dir_button_pressed(self):
+        dir_selected = QFileDialog.getExistingDirectory(self,
+                                                        "Select Ouput Directory",
+                                                        "",
+                                                        QFileDialog.ShowDirsOnly);
+        self.output_dir_text.setText(dir_selected);
+
+    def on_run_button_pressed(self):
+        try:
+            #Create and setup the MergeProcess..
+            merge_process = MergeProcess();
+
+            merge_process.set_frame_path (str(self.frame_image_text.text()));
+            merge_process.set_images_path(str(self.images_dir_text.text ()));
+            merge_process.set_output_path(str(self.output_dir_text.text ()));
+
+            merge_process.init();
+
+
+            #Create the progress dialog.
+            progress = QProgressDialog("Merging Photos",
+                                       "Cancel",
+                                       0,
+                                       merge_process.get_images_count(),
+                                       self);
+            progress.setWindowModality(Qt.WindowModal);
+
+
+            #Keep merging the photos and updating the progress interface
+            #until all photos are merged or user wants to quit.
+            while(merge_process.has_image_to_merge()):
+                merge_process.merge();
+                progress.setValue(merge_process.get_current_image_index());
+
+                #User wants to quit.
+                if(progress.wasCanceled()): return;
+
+            #Set the all things are done.
+            progress.setValue(merge_process.get_images_count());
+
+            #Show to user that processing was complete.
+            QMessageBox.information(self,
+                                    "Frame Merger",
+                                    "Processing complete...",
+                                    QMessageBox.Ok);
+
+        except Exception, e:
+            QMessageBox. critical(self,
+                                  "Frame Merger",
+                                  str(e),
+                                  QMessageBox.Ok);
+
+    ############################################################################
+    ## Text Box Callbacks                                                     ##
+    ############################################################################
+    def on_text_changed(self):
+        frame_len  = len(self.frame_image_text.text());
+        images_len = len(self.images_dir_text.text());
+        output_len = len(self.output_dir_text.text());
+
+        all_filled = frame_len != 0 and images_len != 0 and output_len != 0;
+        self.run_button.setEnabled(all_filled);
+
+
+
+################################################################################
+## MergeProcess                                                               ##
+################################################################################
+class MergeProcess:
+    ############################################################################
+    ## CTOR                                                                   ##
+    ############################################################################
+    def __init__(self):
+        self.__frame_path  = None;
+        self.__images_path = None;
+        self.__output_path = None;
+
+        self.__images_filenames     = None;
+        self.__current_photo_index  = 0;
+
+    ############################################################################
+    ## Initializer Method                                                     ##
+    ############################################################################
+    def init(self):
+        self.__check_paths();
+        self.__clean_images_filenames_list();
+
+
+    ############################################################################
+    ## Path Setters                                                           ##
+    ############################################################################
+    def set_frame_path(self, path):
+        self.__frame_path = path;
+
+    def set_images_path(self, path):
+        self.__images_path = path;
+
+    def set_output_path(self, path):
+        self.__output_path = path;
+
+
+    ############################################################################
+    ## Merge Process State Getters                                            ##
+    ############################################################################
+    def get_images_count(self):
+        return len(self.__images_filenames);
+
+    def get_current_image_index(self):
+        return self.__current_photo_index;
+
+    def has_image_to_merge(self):
+        return self.__current_photo_index < self.get_images_count();
+
+
+    ############################################################################
+    ## Action Method                                                          ##
+    ############################################################################
+    def merge(self):
+        image_filename = self.__images_filenames[self.__current_photo_index];
+
+        image_fullpath  = os.path.join(self.__images_path, image_filename);
+        output_fullpath = os.path.join(self.__output_path, image_filename);
+
+        self.__merge_photo(image_fullpath, output_fullpath);
+
+        self.__current_photo_index += 1;
+
+    ############################################################################
+    ## Helper Methods                                                         ##
+    ############################################################################
+    def __check_paths(self):
+        if(not os.path.isfile(self.__frame_path)):
+            raise Exception("Frame Image Path is not a valid.");
+
+        if(not os.path.isdir(self.__images_path)):
+            raise Exception("Images Dir Path is not a valid.");
+
+
+    def __clean_images_filenames_list(self):
+        #COWTODO: Comment.
+        clean_filenames = [];
+
+        filenames = os.listdir(self.__images_path);
+        for filename in filenames:
+            name, ext = os.path.splitext(filename);
+            if(ext in Constants.IMAGE_FORMATS):
+                clean_filenames.append(filename);
+
+        self.__images_filenames = clean_filenames;
+
+
+    def __merge_photo(self, input_filename, output_filename):
+        #COWTODO: Comment.
+        try:
+            frame_surface = pygame.image.load(self.__frame_path);
+            image_surface = pygame.image.load(input_filename);
+
+            image_surface.blit(frame_surface, (0,0));
+
+            pygame.image.save(image_surface, output_filename);
+
+        except Exception, e:
+            msg = "{} ({}) - Exception: {}".format("Error while merging photo",
+                                                   input_filename,
+                                                   str(e))
+            raise Exception(msg);
+
 
 
 ################################################################################
@@ -141,98 +439,71 @@ def system_cmd(cmd, expected_ret_val = 0):
 def expand_path(path):
     return os.path.abspath(os.path.expanduser(path));
 
-################################################################################
-## Processsing                                                                ##
-################################################################################
-def get_only_image_files():
-    #COWTODO: Comment.
-    image_filenames = [];
 
-    filenames = os.listdir(Globals.images_dir_path);
-    for filename in filenames:
-        name, ext = os.path.splitext(filename);
-        if(ext in Constants.IMAGE_FORMATS):
-            image_filenames.append(filename);
-
-    return image_filenames;
-
-def merge_photo(input_filename, output_filename):
-    #COWTODO: Comment.
+def run(frame_path, images_path, output_path):
     try:
-        frame_surface = pygame.image.load(Globals.frame_image_path);
-        image_surface = pygame.image.load(input_filename);
+        merge_process = MergeProcess();
 
-        image_surface.blit(frame_surface, (0,0));
+        merge_process.set_frame_path(frame_path);
+        merge_process.set_images_path(images_path);
+        merge_process.set_output_path(output_path);
 
-        pygame.image.save(image_surface, output_filename);
+        merge_process.init();
 
+        print "Images found: {}".format(merge_process.get_images_count());
+        while(merge_process.has_image_to_merge()):
+            print "{} ({}) of ({})".format("Merging image",
+                                            merge_process.get_current_image_index() + 1,
+                                            merge_process.get_images_count());
+            merge_process.merge();
+        print "Done...";
     except Exception, e:
-        msg = "{} ({}) - Exception: {}".format("Error while merging photo",
-                                               C.blue(input_filename),
-                                               str(e))
-        print_fatal(msg);
-
-
-def run():
-    #COWTODO: Comment.
-    pygame.init();
-
-    image_filenames = get_only_image_files();
-    images_count    = len(image_filenames);
-
-    print "Images found: ({})".format(images_count);
-
-    for i in xrange(0, images_count):
-
-        image_filename  = os.path.join(Globals.images_dir_path, image_filenames[i]);
-        output_filename = os.path.join(Globals.output_dir_path, image_filenames[i]);
-
-        print "Processing image {} of {}".format(i+1, images_count);
-        print "Image Filename : ({})".format(C.yellow(image_filename));
-        print "Output Filename: ({})".format(C.green(output_filename));
-
-        merge_photo(image_filename, output_filename);
-        print "done...";
+        print_fatal(str(e));
 
 
 ################################################################################
 ## Script Initialization                                                      ##
 ################################################################################
 def main():
-    #Get the command line options.
-    try:
-        options = getopt.gnu_getopt(sys.argv[1:],
-                                    Constants.ALL_FLAGS_SHORT,
-                                    Constants.ALL_FLAGS_LONG);
-    except Exception, e:
-        print_fatal(e);
+    run("/Users/mesquitax/Desktop/frame.png",
+        "/Users/mesquitax/Desktop/t1",
+        "/Users/mesquitax/Desktop/OLA");
 
-    #Parse the options.
-    for option in options[0]:
-        key, value = option;
-        key = key.lstrip("-");
+    # GUI.run();
+    # #Get the command line options.
+    # try:
+    #     options = getopt.gnu_getopt(sys.argv[1:],
+    #                                 Constants.ALL_FLAGS_SHORT,
+    #                                 Constants.ALL_FLAGS_LONG);
+    # except Exception, e:
+    #     print_fatal(e);
 
-        #Help/Version.
-        if  (key in Constants.FLAG_HELP   ): print_help();
-        elif(key in Constants.FLAG_VERSION): print_version();
+    # #Parse the options.
+    # for option in options[0]:
+    #     key, value = option;
+    #     key = key.lstrip("-");
 
-        #Frame and Images path.
-        elif(key in Constants.FLAG_FRAME_IMAGE_PATH):
-             Globals.frame_image_path = value;
-        elif(key in Constants.FLAG_IMAGES_DIR_PATH):
-             Globals.images_dir_path = value;
+    #     #Help/Version.
+    #     if  (key in Constants.FLAG_HELP   ): print_help();
+    #     elif(key in Constants.FLAG_VERSION): print_version();
 
-        #Output path.
-        elif(key in Constants.FLAG_OUTPUT_DIR_PATH):
-            Globals.output_dir_path = value;
+    #     #Frame and Images path.
+    #     elif(key in Constants.FLAG_FRAME_IMAGE_PATH):
+    #          Globals.frame_image_path = value;
+    #     elif(key in Constants.FLAG_IMAGES_DIR_PATH):
+    #          Globals.images_dir_path = value;
+
+    #     #Output path.
+    #     elif(key in Constants.FLAG_OUTPUT_DIR_PATH):
+    #         Globals.output_dir_path = value;
 
 
-    #COWTODO: Perform sanity check on values.
-    Globals.frame_image_path = expand_path(Globals.frame_image_path);
-    Globals.images_dir_path  = expand_path(Globals.images_dir_path);
-    Globals.output_dir_path  = expand_path(Globals.output_dir_path);
+    # #COWTODO: Perform sanity check on values.
+    # Globals.frame_image_path = expand_path(Globals.frame_image_path);
+    # Globals.images_dir_path  = expand_path(Globals.images_dir_path);
+    # Globals.output_dir_path  = expand_path(Globals.output_dir_path);
 
-    run();
+    # run();
 
 if(__name__ == "__main__"):
     main();
