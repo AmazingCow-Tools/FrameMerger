@@ -110,25 +110,30 @@ class GUI(QWidget):
     def __init__(self):
         QWidget.__init__(self);
 
-        #Create the widgets.
-        self.frame_image_label  = None;
-        self.frame_image_text   = None;
-        self.frame_image_button = None;
+        #UI Elements.
+        #Frame.
+        self.__frame_image_label  = None;
+        self.__frame_image_text   = None;
+        self.__frame_image_button = None;
+        #Images Dir.
+        self.__images_dir_label  = None;
+        self.__images_dir_text   = None;
+        self.__images_dir_button = None;
+        #Output Dir.
+        self.__output_dir_label  = None;
+        self.__output_dir_text   = None;
+        self.__output_dir_button = None;
+        #Merge Button.
+        self.__run_button = None;
+        #Layout.
+        self.__root_layout = None;
+        #Merge Progress Dialog.
+        self.__progess_dialog = None;
 
-        self.images_dir_label  = None;
-        self.images_dir_text   = None;
-        self.images_dir_button = None;
+        #The Merge Process object.
+        self.__merge_process  = None;
 
-        self.output_dir_label  = None;
-        self.output_dir_text   = None;
-        self.output_dir_button = None;
-
-        self.run_button = None;
-
-        #Create the layout.
-        self.root_layout = None;
-
-        #Start the ui.
+        #Initialize the UI.
         self.init_ui();
 
 
@@ -145,61 +150,61 @@ class GUI(QWidget):
 
         #Create the widgets.
         #Frame Image.
-        self.frame_image_label = QLabel("Frame Image Path:");
+        self.__frame_image_label = QLabel("Frame Image Path:");
 
-        self.frame_image_text = QLineEdit();
-        self.frame_image_text.textChanged.connect(self.on_text_changed);
+        self.__frame_image_text = QLineEdit();
+        self.__frame_image_text.textChanged.connect(self.__on_text_changed);
 
-        self.frame_image_button = QPushButton("...");
-        self.frame_image_button.clicked.connect(self.on_frame_image_button_pressed);
+        self.__frame_image_button = QPushButton("...");
+        self.__frame_image_button.clicked.connect(self.__on_frame_image_button_pressed);
 
         #Images Dir.
-        self.images_dir_label = QLabel("Images Directory Path:");
+        self.__images_dir_label = QLabel("Images Directory Path:");
 
-        self.images_dir_text  = QLineEdit();
-        self.images_dir_text.textChanged.connect(self.on_text_changed);
+        self.__images_dir_text  = QLineEdit();
+        self.__images_dir_text.textChanged.connect(self.__on_text_changed);
 
-        self.images_dir_button = QPushButton("...");
-        self.images_dir_button.clicked.connect(self.on_images_dir_button_pressed);
+        self.__images_dir_button = QPushButton("...");
+        self.__images_dir_button.clicked.connect(self.__on_images_dir_button_pressed);
 
-        #Ouput Dir.
-        self.output_dir_label = QLabel("Output Directory Path:");
+        #Output Dir.
+        self.__output_dir_label = QLabel("Output Directory Path:");
 
-        self.output_dir_text  = QLineEdit();
-        self.output_dir_text.textChanged.connect(self.on_text_changed);
+        self.__output_dir_text  = QLineEdit();
+        self.__output_dir_text.textChanged.connect(self.__on_text_changed);
 
-        self.output_dir_button = QPushButton("...");
-        self.output_dir_button.clicked.connect(self.on_output_dir_button_pressed);
+        self.__output_dir_button = QPushButton("...");
+        self.__output_dir_button.clicked.connect(self.__on_output_dir_button_pressed);
 
         #Run Button.
-        self.run_button = QPushButton("Start merge!");
-        self.run_button.setEnabled(True);
-        self.run_button.clicked.connect(self.on_run_button_pressed);
+        self.__run_button = QPushButton("Start merge!");
+        self.__run_button.setEnabled(True);
+        self.__run_button.clicked.connect(self.__on_run_button_pressed);
 
         #Create the layout.
-        self.root_layout = QGridLayout(self);
+        self.__root_layout = QGridLayout(self);
 
         #Add the widgets to layout.
         #Frame Image.
-        self.root_layout.addWidget(self.frame_image_label,  1, 1);
-        self.root_layout.addWidget(self.frame_image_text,   2, 1);
-        self.root_layout.addWidget(self.frame_image_button, 2, 2);
+        self.__root_layout.addWidget(self.__frame_image_label,  1, 1);
+        self.__root_layout.addWidget(self.__frame_image_text,   2, 1);
+        self.__root_layout.addWidget(self.__frame_image_button, 2, 2);
         #Images Dir.
-        self.root_layout.addWidget(self.images_dir_label,  3, 1);
-        self.root_layout.addWidget(self.images_dir_text,   4, 1);
-        self.root_layout.addWidget(self.images_dir_button, 4, 2);
+        self.__root_layout.addWidget(self.__images_dir_label,  3, 1);
+        self.__root_layout.addWidget(self.__images_dir_text,   4, 1);
+        self.__root_layout.addWidget(self.__images_dir_button, 4, 2);
         #Output Dir.
-        self.root_layout.addWidget(self.output_dir_label,  5, 1);
-        self.root_layout.addWidget(self.output_dir_text,   6, 1);
-        self.root_layout.addWidget(self.output_dir_button, 6, 2);
+        self.__root_layout.addWidget(self.__output_dir_label,  5, 1);
+        self.__root_layout.addWidget(self.__output_dir_text,   6, 1);
+        self.__root_layout.addWidget(self.__output_dir_button, 6, 2);
         #Merge Button.
-        self.root_layout.addWidget(self.run_button, 7, 1, 2, 1 );
+        self.__root_layout.addWidget(self.__run_button, 7, 1, 2, 1 );
 
 
     ############################################################################
     ## Button Callbacks                                                       ##
     ############################################################################
-    def on_frame_image_button_pressed(self):
+    def __on_frame_image_button_pressed(self):
         #Create a string with the supported image formats to pass to QFileDialog.
         #The string will have the format of Images Files (*.FMT1 *.FMT2 *.FMTN)
         #This is need to ensure that user will selected a valid image format.
@@ -209,57 +214,48 @@ class GUI(QWidget):
                                                     "",
                                                     image_formats_str);
 
-        self.frame_image_text.setText(file_selected);
+        self.__frame_image_text.setText(file_selected);
 
-    def on_images_dir_button_pressed(self):
-        #COWTODO: Comment.
+    def __on_images_dir_button_pressed(self):
+        #The user press the ... button of the Images Dir.
+        #Set the Dialog to let user selected a directory that will
+        #be used to get the photos list.
         dir_selected = QFileDialog.getExistingDirectory(self,
                                                         "Select Images Directory",
                                                         "",
                                                         QFileDialog.ShowDirsOnly);
-        self.images_dir_text.setText(dir_selected);
+        self.__images_dir_text.setText(dir_selected);
 
-    def on_output_dir_button_pressed(self):
-        #COWTODO: Comment.
+    def __on_output_dir_button_pressed(self):
+        #The user press the ... button of the Output Dir.
+        #Set the Dialog to let user selected a directory that will
+        #be used to place the merged photos.
         dir_selected = QFileDialog.getExistingDirectory(self,
-                                                        "Select Ouput Directory",
+                                                        "Select Output Directory",
                                                         "",
                                                         QFileDialog.ShowDirsOnly);
-        self.output_dir_text.setText(dir_selected);
+        self.__output_dir_text.setText(dir_selected);
 
-    def on_run_button_pressed(self):
-        #COWTODO: Comment.
+    def __on_run_button_pressed(self):
+        #Merge the photos and update the Progress Dialog if needed.
         try:
-            #Create and setup the MergeProcess..
-            merge_process = MergeProcess();
-
-            merge_process.set_frame_path (str(self.frame_image_text.text()));
-            merge_process.set_images_path(str(self.images_dir_text.text ()));
-            merge_process.set_output_path(str(self.output_dir_text.text ()));
-
-            merge_process.init();
-
-
-            #Create the progress dialog.
-            progress = QProgressDialog("Merging Photos",
-                                       "Cancel",
-                                       0,
-                                       merge_process.get_images_count(),
-                                       self);
-            progress.setWindowModality(Qt.WindowModal);
-
+            self.__create_and_init_merge_process();
+            self.__create_and_init_process_dialog();
 
             #Keep merging the photos and updating the progress interface
             #until all photos are merged or user wants to quit.
-            while(merge_process.has_image_to_merge()):
-                merge_process.merge();
-                progress.setValue(merge_process.get_current_image_index());
+            while(self.__merge_process.has_image_to_merge()):
+                self.__merge_process.merge();
+                index = self.__merge_process.get_current_image_index()
+                self.__progress_dialog.setValue(index);
 
                 #User wants to quit.
-                if(progress.wasCanceled()): return;
+                if(self.__progress_dialog.wasCanceled()):
+                    return;
 
             #Set the all things are done.
-            progress.setValue(merge_process.get_images_count());
+            images_count = self.__merge_process.get_images_count();
+            self.__progress_dialog.setValue(images_count);
 
             #Show to user that processing was complete.
             QMessageBox.information(self,
@@ -267,26 +263,48 @@ class GUI(QWidget):
                                     "Processing complete...",
                                     QMessageBox.Ok);
 
-        #COWTODO: Comment.
+        #This except block will catch all types of exceptions generated
+        #by the try block above and will show them in a "nice" Error Dialog
+        #to user.
         except Exception, e:
-            QMessageBox. critical(self,
-                                  "Frame Merger",
-                                  str(e),
-                                  QMessageBox.Ok);
+            QMessageBox.critical(self,
+                                 "Frame Merger",
+                                 str(e),
+                                 QMessageBox.Ok);
 
 
     ############################################################################
     ## Text Box Callbacks                                                     ##
     ############################################################################
-    def on_text_changed(self):
-        #COWTODO: Comment.
-        frame_len  = len(self.frame_image_text.text());
-        images_len = len(self.images_dir_text.text());
-        output_len = len(self.output_dir_text.text());
+    def __on_text_changed(self):
+        #We only enable the run button if user fills all the text boxes.
+        frame_len  = len(self.__frame_image_text.text());
+        images_len = len(self.__images_dir_text.text());
+        output_len = len(self.__output_dir_text.text());
 
-        all_filled = frame_len != 0 and images_len != 0 and output_len != 0;
-        self.run_button.setEnabled(all_filled);
+        all_filled = (frame_len != 0) and (images_len != 0) and (output_len != 0);
+        self.__run_button.setEnabled(all_filled);
 
+
+    ############################################################################
+    ## Helper Methods                                                         ##
+    ############################################################################
+    def __create_and_init_merge_process(self):
+        self.__merge_process = MergeProcess();
+
+        self.__merge_process.set_frame_path (str(self.__frame_image_text.text()));
+        self.__merge_process.set_images_path(str(self.__images_dir_text.text ()));
+        self.__merge_process.set_output_path(str(self.__output_dir_text.text ()));
+
+        self.__merge_process.init();
+
+    def __create_and_init_process_dialog(self):
+        self.__progress_dialog = QProgressDialog("Merging Photos",
+                                                 "Cancel",
+                                                 0,
+                                                 self.__merge_process.get_images_count(),
+                                                 self);
+        self.__progress_dialog.setWindowModality(Qt.WindowModal);
 
 
 ################################################################################
