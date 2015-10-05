@@ -466,8 +466,24 @@ class C:
 ## Print Functions                                                            ##
 ################################################################################
 def print_help():
-    #COWTODO: Implement.
     help = """Usage:
+  frame-merger [-hv] [-f <frame-path>] [-i <images-path>] [-o <output-path>]
+  frame-merger --gui
+
+Options:
+ *-h --help    : Show this screen.
+ *-v --version : Show app version and copyright.
+ *   --gui     : Run in graphical mode.
+
+  -f --frame       <frame-path>  : Path for the frame image.
+  -i --images-dir  <images-path> : Path for dir of images that will be merged.
+  -o --output-path <output-path> : Path of the output dir.
+
+Notes:
+  Options marked with * are exclusive, i.e. the frame-merger will run that
+  and exit successfully after the operation.
+
+  In command line mode the [-f -i -o] flags are required.
   """;
     print help;
     exit(0);
