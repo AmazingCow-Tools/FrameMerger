@@ -315,19 +315,20 @@ class MergeProcess:
     ## CTOR                                                                   ##
     ############################################################################
     def __init__(self):
-        #COWTODO: Comment.
-        self.__frame_path  = None;
-        self.__images_path = None;
-        self.__output_path = None;
+        self.__frame_path  = None; #Path of the Frame Image.
+        self.__images_path = None; #Path of dir that holds the images to be merged.
+        self.__output_path = None; #Path of dir that merge images will be placed.
 
-        self.__images_filenames     = None;
+        self.__images_filenames     = None; #Will hold only valid image filenames.
         self.__current_photo_index  = 0;
 
     ############################################################################
     ## Initializer Method                                                     ##
     ############################################################################
     def init(self):
-        #COWTODO: Comment.
+        #We must assure that paths give are valid
+        #and that the list of image filenames contains
+        #only valid image filenames.
         self.__check_paths();
         self.__clean_images_filenames_list();
 
@@ -362,7 +363,9 @@ class MergeProcess:
     ## Action Method                                                          ##
     ############################################################################
     def merge(self):
-        #COWTODO: Comment.
+        #Grab the name of the current image.
+        #Canonize it's path and create the output path based in it's name.
+        #Next merge the photo and advance the image index.
         image_filename = self.__images_filenames[self.__current_photo_index];
 
         image_fullpath  = os.path.join(self.__images_path, image_filename);
@@ -376,13 +379,16 @@ class MergeProcess:
     ## Helper Methods                                                         ##
     ############################################################################
     def __check_paths(self):
-        #COWTODO: Comment.
+        #Paths could came with any format, so first we will canonize them.
+        #i.e. make them absolute paths. Those method will return a path
+        #in it's absolute form or None if an absolute path cannot be formed.
+
         #Canonize the paths...
         self.__frame_path  = self.__canonize_path(self.__frame_path);
         self.__images_path = self.__canonize_path(self.__images_path);
         self.__output_path = self.__canonize_path(self.__output_path);
 
-        #COWTODO: Comment.
+        #If any path cannot be formed fail now.
         if(self.__frame_path is None or not os.path.isfile(self.__frame_path)):
             raise Exception("Frame Image Path is not a valid.");
 
@@ -392,16 +398,25 @@ class MergeProcess:
         if(self.__output_path is None):
             raise Exception("Output Dir Path is not a valid.");
 
-    def __canonize_path(self, path):
-        if(path is None): return None;
+        #An output path can not exists yet so create it now.
+        #We're using the mkdir -p to ensure that the full tree
+        #is created or if it already exists the call doesn't fail.
+        if(os.system("mkdir -p {}".format(self.__output_path)) != 0):
+            raise Exception("Output dir path is not valid and cannot be created.");
 
+
+    def __canonize_path(self, path):
+        if(path is None):
+            return None;
         return os.path.abspath(os.path.expanduser(path));
 
     def __clean_images_filenames_list(self):
-        #COWTODO: Comment.
         clean_filenames = [];
 
-        #COWTODO: Comment.
+        #Iterate for all files in the images directory and
+        #only selects those that is like to be an image.
+        #This not means that the file is a valid image, but it
+        #will be handled after.
         filenames = os.listdir(self.__images_path);
         for filename in filenames:
             name, ext = os.path.splitext(filename);
@@ -412,7 +427,8 @@ class MergeProcess:
 
 
     def __merge_photo(self, input_filename, output_filename):
-        #COWTODO: Comment.
+        #Load both the Frame Image and the Image that will be merged.
+        #Merge them an then save the merged image into disk.
         try:
             frame_surface = pygame.image.load(self.__frame_path);
             image_surface = pygame.image.load(input_filename);
@@ -421,7 +437,7 @@ class MergeProcess:
 
             pygame.image.save(image_surface, output_filename);
 
-        #COWTODO: Comment.
+        #If anything went wrong, so fail now.
         except Exception, e:
             msg = "{} ({}) - Exception: {}".format("Error while merging photo",
                                                    input_filename,
@@ -472,14 +488,8 @@ def print_fatal(msg):
 ################################################################################
 ## Helper Functions                                                           ##
 ################################################################################
-def system_cmd(cmd, expected_ret_val = 0):
-    #COWTODO: Comment.
-    ret = os.system(cmd);
-    if(ret != expected_ret_val):
-        print_fatal("cmd:", cmd);
-
 def run(frame_path, images_path, output_path):
-    #COWTODO: Comment.
+    #Merge all photos.
     try:
         merge_process = MergeProcess();
 
@@ -497,7 +507,9 @@ def run(frame_path, images_path, output_path):
             merge_process.merge();
         print "Done...";
 
-    #COWTODO: Comment.
+    #This except block will catch all types of exceptions generated
+    #by the try block above and will show them in a "nice" error message
+    #to user.
     except Exception, e:
         print_fatal(str(e));
 
@@ -514,7 +526,7 @@ def main():
     except Exception, e:
         print_fatal(e);
 
-    #COWTODO: Comment.
+    #Vars to hold the values of the non exclusive command line options.
     opt_frame_image_path = None;
     opt_images_dir_path  = None;
     opt_output_dir_path  = None;
