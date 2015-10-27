@@ -42,7 +42,7 @@
 
 install:
 	cp -f framemerger.py /usr/local/bin/frame-merger
-	chmod 744 /usr/local/bin/frame-merger
+	chmod 755 /usr/local/bin/frame-merger
 
 uninstall:
 	rm /usr/local/bin/frame-merger

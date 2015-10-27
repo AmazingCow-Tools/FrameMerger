@@ -1,2 +1,6 @@
 version 0.1:
 [Oct 6 2015] - Finish the implementation.
+
+version 0.1.1:
+[Oct 27 2015] - Now if frame-merger is called without arguments 
+				the help screen is displayed.
