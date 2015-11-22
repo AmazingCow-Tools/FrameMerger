@@ -9,3 +9,9 @@ version 0.1.2:
 [Oct 22 2015] - Change the requirements libs for the frame-merger,
                 so now is not required to have termcolor package to
                 make the application run.
+
+version 0.1.3:
+[Oct 22 2015] - Now the start button in GUI mode is disabled by defaut.
+                This prevents users to start with invalid arguments.
+
+

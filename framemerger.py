@@ -86,7 +86,7 @@ class Constants:
 
     #App.
     APP_NAME      = "frame-merger";
-    APP_VERSION   = "0.1.2";
+    APP_VERSION   = "0.1.3";
     APP_AUTHOR    = "N2OMatt <n2omatt@amazingcow.com>"
     APP_COPYRIGHT = "\n".join(("Copyright (c) 2015 - Amazing Cow",
                                "This is a free software (GPLv3) - Share/Hack it",
@@ -183,7 +183,7 @@ class GUI(QWidget):
 
         #Run Button.
         self.__run_button = QPushButton("Start merge!");
-        self.__run_button.setEnabled(True);
+        self.__run_button.setEnabled(False);
         self.__run_button.clicked.connect(self.__on_run_button_pressed);
 
         #Create the layout.
