@@ -46,7 +46,12 @@ import os;
 import os.path;
 import sys;
 import getopt;
-import termcolor;
+try:
+    from termcolor import colored;
+except Exception, e:
+    def colored(msg, color):
+        return msg;
+
 #COWTODO: Today we're using pygame to merge the photos.
 #COWTODO: But the desired is to use ImageMagick...
 import pygame;
@@ -81,7 +86,7 @@ class Constants:
 
     #App.
     APP_NAME      = "frame-merger";
-    APP_VERSION   = "0.1.1";
+    APP_VERSION   = "0.1.2";
     APP_AUTHOR    = "N2OMatt <n2omatt@amazingcow.com>"
     APP_COPYRIGHT = "\n".join(("Copyright (c) 2015 - Amazing Cow",
                                "This is a free software (GPLv3) - Share/Hack it",
@@ -451,15 +456,20 @@ class MergeProcess:
 ################################################################################
 class C:
     @staticmethod
-    def red(msg)    : return termcolor.colored(msg, "red");
+    def red(msg) :
+        return colored(msg, "red");
     @staticmethod
-    def green(msg)  : return termcolor.colored(msg, "green");
+    def green(msg) :
+        return colored(msg, "green");
     @staticmethod
-    def blue(msg)   : return termcolor.colored(msg, "blue");
+    def blue(msg) :
+        return colored(msg, "blue");
     @staticmethod
-    def magenta(msg): return termcolor.colored(msg, "magenta");
+    def magenta(msg) :
+        return colored(msg, "magenta");
     @staticmethod
-    def yellow(msg) : return termcolor.colored(msg, "yellow");
+    def yellow(msg) :
+        return colored(msg, "yellow");
 
 
 ################################################################################
