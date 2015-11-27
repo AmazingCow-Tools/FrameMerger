@@ -3,7 +3,8 @@ Frame Merger
 Made with <3 by [Amazing Cow](http://www.amazingcow.com).
 
 ## Intro:
-In an app named **Photo Totem** that we made for our partners at [Imidiar](http://www.imidiar.com/br) 
+In an app named **Photo Totem** that we made for our partners at 
+[Imidiar](http://www.imidiar.com/br) 
 we have an optimization trade-off that we did.   
 The **Photo Totem** hardware is not powerful enough to run the application
 at full speed (i.e. +30FPS) and make the image processing at same time.  
@@ -58,14 +59,14 @@ Options:
  *-h --help    : Show this screen.
  *-v --version : Show app version and copyright.
  *   --gui     : Run in graphical mode.
-
+     
   -f --frame       <frame-path>  : Path for the frame image.
   -i --images-dir  <images-path> : Path for dir of images that will be merged.
   -o --output-path <output-path> : Path of the output dir.
-
+     --jpg                       : Force all output images to be jpg.
 ```
 
-#####Notes:
+##### Notes:
   Options marked with * are exclusive, i.e. the ```frame-merger``` will run that
   and exit successfully after the operation.
 
