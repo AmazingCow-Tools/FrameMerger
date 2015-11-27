@@ -70,6 +70,7 @@ class Constants:
     FLAG_FRAME_IMAGE_PATH = "f", "frame";
     FLAG_IMAGES_DIR_PATH  = "i", "images-dir";
     FLAG_OUTPUT_DIR_PATH  = "o", "output-dir";
+    FLAG_FORCE_JPG        =  "", "jpg";
 
     ALL_FLAGS_SHORT = "hvf:i:o:";
     ALL_FLAGS_LONG  = [
@@ -78,7 +79,8 @@ class Constants:
         FLAG_GUI             [1],
         FLAG_FRAME_IMAGE_PATH[1] + "=",
         FLAG_IMAGES_DIR_PATH [1] + "=",
-        FLAG_OUTPUT_DIR_PATH [1] + "="
+        FLAG_OUTPUT_DIR_PATH [1] + "=",
+        FLAG_FORCE_JPG       [1],
     ];
 
     #Image formats.
@@ -86,7 +88,7 @@ class Constants:
 
     #App.
     APP_NAME      = "frame-merger";
-    APP_VERSION   = "0.1.3";
+    APP_VERSION   = "0.1.4";
     APP_AUTHOR    = "N2OMatt <n2omatt@amazingcow.com>"
     APP_COPYRIGHT = "\n".join(("Copyright (c) 2015 - Amazing Cow",
                                "This is a free software (GPLv3) - Share/Hack it",
@@ -186,6 +188,9 @@ class GUI(QWidget):
         self.__run_button.setEnabled(False);
         self.__run_button.clicked.connect(self.__on_run_button_pressed);
 
+        #Force JPG checkbox.
+        self.__force_jpg_checkbox = QCheckBox("Force save in JPG", self);
+
         #Create the layout.
         self.__root_layout = QGridLayout(self);
 
@@ -204,6 +209,8 @@ class GUI(QWidget):
         self.__root_layout.addWidget(self.__output_dir_button, 6, 2);
         #Merge Button.
         self.__root_layout.addWidget(self.__run_button, 7, 1, 2, 1 );
+        #Force JPG checkbox.
+        self.__root_layout.addWidget(self.__force_jpg_checkbox, 7, 2, 2, 1 );
 
 
     ############################################################################
@@ -300,6 +307,7 @@ class GUI(QWidget):
         self.__merge_process.set_frame_path (str(self.__frame_image_text.text()));
         self.__merge_process.set_images_path(str(self.__images_dir_text.text ()));
         self.__merge_process.set_output_path(str(self.__output_dir_text.text ()));
+        self.__merge_process.set_save_in_jpg(self.__force_jpg_checkbox.isChecked());
 
         self.__merge_process.init();
 
@@ -324,6 +332,8 @@ class MergeProcess:
         self.__images_path = None; #Path of dir that holds the images to be merged.
         self.__output_path = None; #Path of dir that merge images will be placed.
 
+        self.__force_jpg  = False;
+
         self.__images_filenames     = None; #Will hold only valid image filenames.
         self.__current_photo_index  = 0;
 
@@ -339,7 +349,7 @@ class MergeProcess:
 
 
     ############################################################################
-    ## Path Setters                                                           ##
+    ## Setters                                                                ##
     ############################################################################
     def set_frame_path(self, path):
         self.__frame_path = path;
@@ -350,6 +360,8 @@ class MergeProcess:
     def set_output_path(self, path):
         self.__output_path = path;
 
+    def set_save_in_jpg(self, b):
+        self.__force_jpg = b;
 
     ############################################################################
     ## Merge Process State Getters                                            ##
@@ -375,6 +387,10 @@ class MergeProcess:
 
         image_fullpath  = os.path.join(self.__images_path, image_filename);
         output_fullpath = os.path.join(self.__output_path, image_filename);
+
+        #If is to save in JPG, change the output filename to JPG.
+        if(self.__force_jpg):
+            output_fullpath = output_fullpath.replace(".png", ".jpg");
 
         self.__merge_photo(image_fullpath, output_fullpath);
 
@@ -488,6 +504,7 @@ Options:
   -f --frame       <frame-path>  : Path for the frame image.
   -i --images-dir  <images-path> : Path for dir of images that will be merged.
   -o --output-path <output-path> : Path of the output dir.
+     --jpg                       : Force all output images to be jpg.
 
 Notes:
   Options marked with * are exclusive, i.e. the frame-merger will run that
@@ -514,7 +531,7 @@ def print_fatal(msg):
 ################################################################################
 ## Helper Functions                                                           ##
 ################################################################################
-def run(frame_path, images_path, output_path):
+def run(frame_path, images_path, output_path, save_in_jpg):
     #Merge all photos.
     try:
         merge_process = MergeProcess();
@@ -522,6 +539,7 @@ def run(frame_path, images_path, output_path):
         merge_process.set_frame_path (frame_path);
         merge_process.set_images_path(images_path);
         merge_process.set_output_path(output_path);
+        merge_process.set_save_in_jpg(save_in_jpg);
 
         merge_process.init();
 
@@ -559,6 +577,7 @@ def main():
     opt_frame_image_path = None;
     opt_images_dir_path  = None;
     opt_output_dir_path  = None;
+    opt_save_in_jpg      = False;
 
     #Parse the options.
     for option in options[0]:
@@ -583,11 +602,16 @@ def main():
         #Output path.
         elif(key in Constants.FLAG_OUTPUT_DIR_PATH):
             opt_output_dir_path = value;
+        #Save in JPG.
+        elif(key in Constants.FLAG_FORCE_JPG):
+            opt_save_in_jpg = True;
+
 
     #Will run in text mode.
     run(opt_frame_image_path,
         opt_images_dir_path,
-        opt_output_dir_path);
+        opt_output_dir_path,
+        opt_save_in_jpg);
 
 if(__name__ == "__main__"):
     main();
