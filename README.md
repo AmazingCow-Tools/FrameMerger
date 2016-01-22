@@ -1,8 +1,11 @@
 Frame Merger
 ====
+
 Made with <3 by [Amazing Cow](http://www.amazingcow.com).
 
+
 ## Intro:
+
 In an app named **Photo Totem** that we made for our partners at 
 [Imidiar](http://www.imidiar.com/br) 
 we have an optimization trade-off that we did.   
@@ -32,6 +35,9 @@ The goal is very specific but we hope that you find another good ways to use it.
 
 As usual, you are **very welcomed** to **share** and **hack** it.
 
+
+<!-- ####################################################################### -->
+
 ## Notes:
 1. The program doesn't do any attempt to perform validation checks in the size of  
 Frame Image and the Images that will be merged. So **IS NOT REQUIRED** that them have the 
@@ -42,12 +48,17 @@ because running application again it will load the faulty image correctly.
 Currently we don't know how to solve this. Sorry :(
 
 
+<!-- ####################################################################### -->
+
 ## Install:
 Use the Makefile (installing by hand is possible, but again why not using the easy solution?)
 
 ```
     make install
 ```
+
+
+<!-- ####################################################################### -->
 
 ## Usage:
 
@@ -72,11 +83,20 @@ Options:
 
   In command line mode the [-f -i -o] flags are required.
 
+
+<!-- ####################################################################### -->
+
 ## License:
 This software is released under GPLv3.
 
+
+<!-- ####################################################################### -->
+
 ## TODO:
 Check the TODO file.
+
+
+<!-- ####################################################################### -->
 
 ## Others:
 Check our repos and take a look at our [open source site](http://opensource.amazingcow.com).

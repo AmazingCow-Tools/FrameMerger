@@ -3,7 +3,7 @@ version 0.1:
 
 version 0.1.1:
 [Oct 27 2015] - Now if frame-merger is called without arguments
-				the help screen is displayed.
+                the help screen is displayed.
 
 version 0.1.2:
 [Nov 22 2015] - Change the requirements libs for the frame-merger,
@@ -23,3 +23,6 @@ version 0.1.4:
                 Fix the previous [v0.1.2, v0.1.3] dates in changelog.
 
 
+version 0.1.5 - Update the license headers.
+                Update the "version flag" message.
+                Add the "comment separators" on README.
