@@ -53,8 +53,8 @@ except Exception, e:
     def colored(msg, color):
         return msg;
 
-#COWTODO: Today we're using pygame to merge the photos.
-#COWTODO: But the desired is to use ImageMagick...
+#COWTODO: Today we're using pygame to merge the photos. \
+#         But the desired is to use ImageMagick...
 import pygame;
 #For GUI :)
 from PyQt4.QtCore import *
