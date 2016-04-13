@@ -484,19 +484,19 @@ class MergeProcess:
 
         #If any path cannot be formed fail now.
         ##Frame Path.
-        if(self.__frame_path is None):
+        if(self.__frame_path is None or self.__frame_path == ""):
             raise ValueError("Frame Path cannot be empty.");
         elif(not os.path.isfile(self.__frame_path)):
             raise ValueError("Frame Path is not a valid file",
                              C.path(self.__frame_path));
         ##Images Path.
-        if(self.__images_path is None):
+        if(self.__images_path is None or self.__images_path == ""):
             raise ValueError("Images Dir Path cannot be empty.");
         elif(not os.path.isdir(self.__images_path)):
             raise ValueError("Images Dir Path is not a valid directory",
                              C.path(self.__images_path));
         ##Output Path.
-        if(self.__output_path is None):
+        if(self.__output_path is None or self.__images_path == ""):
             raise ValueError("Output Dir Path cannot be empty.");
 
         #An output path can not exists yet so create it now.
@@ -529,8 +529,10 @@ class MergeProcess:
                              C.path(self.__output_path));
 
     def __canonize_path(self, path):
-        if(path is None):
-            return None;
+        path = path.trim(" ");
+        if(path == ""):
+            return path;
+
         return os.path.abspath(os.path.expanduser(path));
 
     def __clean_images_filenames_list(self):
@@ -706,9 +708,9 @@ def main():
 
 
     #Vars to hold the values of the non exclusive command line options.
-    opt_frame_image_path = None;
-    opt_images_dir_path  = None;
-    opt_output_dir_path  = None;
+    opt_frame_image_path = "";
+    opt_images_dir_path  = "";
+    opt_output_dir_path  = "";
     opt_gui              = False;
     opt_save_in_jpg      = False;
     opt_nocolors         = False;
