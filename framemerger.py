@@ -529,7 +529,7 @@ class MergeProcess:
                              C.path(self.__output_path));
 
     def __canonize_path(self, path):
-        path = path.trim(" ");
+        path = path.strip(" ");
         if(path == ""):
             return path;
 
