@@ -46,12 +46,14 @@ import os.path;
 import sys;
 import getopt;
 import pdb;
-
 ## cowtermcolor isn't a standard package - So don't force the users to
 ## have it, just disable colors.
 try:
     import cowtermcolor;
     from cowtermcolor import *;
+
+    cowtermcolor.CONVERT_MODE = cowtermcolor.CONVERT_MODE_CONVERT_NONE_TYPE_TO_EMPTY_STR;
+
 except Exception, e:
     def colored(msg, color):
         return msg;
@@ -198,6 +200,7 @@ class GUI(QWidget):
         #Create the layout.
         self.__root_layout = QGridLayout(self);
 
+        ########################################################################
         ##                     GUI WILL LOOK LIKE THIS                        ##
         ##                        COL 1          COL2                         ##
         ##                  +---------------------------+                     ##
@@ -209,6 +212,7 @@ class GUI(QWidget):
         ##            ROW 6 | [               ] ( ... ) |                     ##
         ##            ROW 7 | (  Start Merge  ) [x] JPG |                     ##
         ##                  +---------------------------+                     ##
+        ########################################################################
         #Add the widgets to layout.
         #Frame Image.
         self.__root_layout.addWidget(self.__frame_image_label,  1, 1);
@@ -293,10 +297,12 @@ class GUI(QWidget):
         #This except block will catch all types of exceptions generated
         #by the try block above and will show them in a "nice" Error Dialog
         #to user.
+        #COWTODO: Handle only ValueError exceptions - Paths malformed \
+        #         and the mkdir exception.
         except Exception, e:
             QMessageBox.critical(self,
                                  "Frame Merger",
-                                 str(e),
+                                 e.args[0],
                                  QMessageBox.Ok);
 
 
@@ -425,21 +431,50 @@ class MergeProcess:
         self.__output_path = self.__canonize_path(self.__output_path);
 
         #If any path cannot be formed fail now.
-        if(self.__frame_path is None or not os.path.isfile(self.__frame_path)):
-            raise Exception("Frame Image Path is not a valid.");
-
-        if(self.__images_path is None or not os.path.isdir(self.__images_path)):
-            raise Exception("Images Dir Path is not a valid.");
-
+        ##Frame Path.
+        if(self.__frame_path is None):
+            raise ValueError("Frame Path cannot be empty.");
+        elif(not os.path.isfile(self.__frame_path)):
+            raise ValueError("Frame Path is not a valid file",
+                             C.path(self.__frame_path));
+        ##Images Path.
+        if(self.__images_path is None):
+            raise ValueError("Images Dir Path cannot be empty.");
+        elif(not os.path.isdir(self.__images_path)):
+            raise ValueError("Images Dir Path is not a valid directory",
+                             C.path(self.__images_path));
+        ##Output Path.
         if(self.__output_path is None):
-            raise Exception("Output Dir Path is not a valid.");
+            raise ValueError("Output Dir Path cannot be empty.");
 
         #An output path can not exists yet so create it now.
-        #We're using the mkdir -p to ensure that the full tree
-        #is created or if it already exists the call doesn't fail.
-        if(os.system("mkdir -p {}".format(self.__output_path)) != 0):
-            raise Exception("Output dir path is not valid and cannot be created.");
+        try:
+            os.makedirs(self.__output_path);
+        except OSError, e:
+            #Prevent the File Exists to be raised.
+            if(e.errno != os.errno.EEXIST):
+                e.filename = C.path(e.filename);
+                raise e;
 
+        #Here we have:
+        # 1 - The output directory already existed
+        #     So os.makedirs failed but we prevent the exception
+        #     to be raised, since it will raise in ALL existing dirs
+        #     and we don't want this - BUT WE DON'T KNOW if we HAVE
+        #     the write permission for this dir or not
+        #     (it could be / for uid != 0)
+        # 2 - The output directory didn't existed but was
+        #     successfully create - This case is the OK case
+        #     since we create it we HAVE the write permission
+        #     for the directory.
+        #
+        #So we MUST check if we HAVE the WRITE perms and if not fail now.
+        #doing this here will prevent the pygame.image.save to fail and
+        #it will be much more easier to user to check the problem
+        #and for us to report it.
+        if(not os.access(self.__output_path, os.W_OK)):
+            raise ValueError("Output Dir Path is not writable.",
+                             C.path(self.__output_path));
 
     def __canonize_path(self, path):
         if(path is None):
@@ -474,6 +509,7 @@ class MergeProcess:
             pygame.image.save(image_surface, output_filename);
 
         #If anything went wrong, so fail now.
+        #COWTODO: Change to a better exception.
         except Exception, e:
             msg = "{} ({}) - Exception: {}".format("Error while merging photo",
                                                    input_filename,
@@ -491,17 +527,20 @@ class C:
         return cowtermcolor.red(msg) + cowtermcolor.reset();
 
     @staticmethod
-    def green(msg) :
-        return colored(msg, "green");
+    def path(msg) :
+        return cowtermcolor.magenta(msg) + cowtermcolor.reset();
+
     @staticmethod
-    def blue(msg) :
-        return colored(msg, "blue");
+    def number(msg) :
+        return cowtermcolor.blue(msg) + cowtermcolor.reset();
+
     @staticmethod
-    def magenta(msg) :
-        return colored(msg, "magenta");
+    def correct(msg) :
+        return cowtermcolor.green(msg) + cowtermcolor.reset();
+
     @staticmethod
-    def yellow(msg) :
-        return colored(msg, "yellow");
+    def processing(msg) :
+        return cowtermcolor.yellow(msg) + cowtermcolor.reset();
 
 
 ################################################################################
@@ -559,19 +598,36 @@ def run(frame_path, images_path, output_path, save_in_jpg):
 
         merge_process.init();
 
-        print "Images found: {}".format(merge_process.get_images_count());
-        while(merge_process.has_image_to_merge()):
-            print "{} ({}) of ({})".format("Merging image",
-                                            merge_process.get_current_image_index() + 1,
-                                            merge_process.get_images_count());
-            merge_process.merge();
-        print "Done...";
+        images_found = C.number(merge_process.get_images_count());
+        print "Images found: ({})".format(images_found);
 
-    #This except block will catch all types of exceptions generated
-    #by the try block above and will show them in a "nice" error message
-    #to user.
-    except Exception, e:
-        print_fatal(str(e));
+        while(merge_process.has_image_to_merge()):
+            current_number = merge_process.get_current_image_index() + 1;
+            total_number   = merge_process.get_images_count();
+
+            padding = len(str(total_number)) - len(str(current_number));
+
+            fmt = "{} ({}) {} ({})"
+            print fmt.format(C.processing("Merging image"),
+                             C.number    (("0" * padding) + str(current_number)),
+                             C.processing("of"),
+                             C.number    (total_number)),
+
+
+            merge_process.merge();
+
+            print C.correct("[OK]");
+
+        print C.correct("Done...");
+
+
+    #COWTODO: Comment
+    except ValueError, e:
+        print_fatal(" - ".join(e.args));
+    except OSError, e:
+        print_fatal("Errno {} - {} - {}".format(e.errno,
+                                                e.strerror,
+                                                C.path(e.filename)));
 
 
 ################################################################################
@@ -621,7 +677,6 @@ def main():
         #Save in JPG.
         elif(key in Constants.FLAG_FORCE_JPG):
             opt_save_in_jpg = True;
-
 
     #Will run in text mode.
     run(opt_frame_image_path,
