@@ -195,6 +195,17 @@ class GUI(QWidget):
         #Create the layout.
         self.__root_layout = QGridLayout(self);
 
+        ##                     GUI WILL LOOK LIKE THIS                        ##
+        ##                        COL 1          COL2                         ##
+        ##                  +---------------------------+                     ##
+        ##            ROW 1 | Frame Image Path          |                     ##
+        ##            ROW 2 | [               ] ( ... ) |                     ##
+        ##            ROW 3 | Images Dir Path           |                     ##
+        ##            ROW 4 | [               ] ( ... ) |                     ##
+        ##            ROW 5 |  Ouput dir Path           |                     ##
+        ##            ROW 6 | [               ] ( ... ) |                     ##
+        ##            ROW 7 | (  Start Merge  ) [x] JPG |                     ##
+        ##                  +---------------------------+                     ##
         #Add the widgets to layout.
         #Frame Image.
         self.__root_layout.addWidget(self.__frame_image_label,  1, 1);
