@@ -1,19 +1,51 @@
-version 0.1:
-[Oct 6 2015] - Finish the implementation.
+================================================================================
+| Version 0.2.x                                                                |
+================================================================================
+[version 0.2.0] -  Apr 13 2016
+-- General --
+    - Start using the cowtermcolor package for coloring. This enable us
+      to make a cleaner code while control more tightly and easily the
+      coloring options.
 
-version 0.1.1:
-[Oct 27 2015] - Now if frame-merger is called without arguments
-                the help screen is displayed.
+-- Source --
+    - Update the version number.
+    - Update the help screen.
+    - GUI can load the values from command line.
+    - Fix the var name (__progress_dialog).
+    - Add the exception handling for OSError in GUI.
+    - Add some comments.
+    - Add the new flags (--no-colors)
+    - Reorganize the flags in Constants class.
+    - Reorganize the cmdline parsing.
+    - Fix some typos.
+    - Add more checking in the output folder creation.
+    - Change totally the way of coloring stuff.
+    - Add some cowtodos.
+    - Add a comment explaining the GUI layout.
+    - Add pdb for debug.
+    - Change the exception raising and handling.
 
-version 0.1.2:
-[Nov 22 2015] - Change the requirements libs for the frame-merger,
-                so now is not required to have termcolor package to
-                make the application run.
+-- Info Files --
+    - Update the CHANGELOG.
+        - Update the version | date format.
+        - Update the sort order - New entries are on top now.
+        - Split the CHANGELOG entry in sections.
 
-version 0.1.3:
-[Nov 22 2015] - Now the start button in GUI mode is disabled by defaut.
-                This prevents users to start with invalid arguments.
+    - Update the README.
+        - Add the OLDREADME.md to hold the old entries - We're rewriting the
+          README to keep it consistent with the other Amazing Cow's programs'
+          READMEs.
 
+
+
+================================================================================
+| Version 0.1.x                                                                |
+================================================================================
+version 0.1.5 - Update the license headers.
+                Update the "version flag" message.
+                Add the "comment separators" on README.
+
+--------------------------------------------------------------------------------
 version 0.1.4:
 [Nov 27 2015] - Add the jpg option so now users are able to force the
                 jpg output disregarding the source image type.
@@ -22,7 +54,22 @@ version 0.1.4:
 
                 Fix the previous [v0.1.2, v0.1.3] dates in changelog.
 
+--------------------------------------------------------------------------------
+version 0.1.3:
+[Nov 22 2015] - Now the start button in GUI mode is disabled by defaut.
+                This prevents users to start with invalid arguments.
 
-version 0.1.5 - Update the license headers.
-                Update the "version flag" message.
-                Add the "comment separators" on README.
+--------------------------------------------------------------------------------
+version 0.1.2:
+[Nov 22 2015] - Change the requirements libs for the frame-merger,
+                so now is not required to have termcolor package to
+                make the application run.
+
+--------------------------------------------------------------------------------
+version 0.1.1:
+[Oct 27 2015] - Now if frame-merger is called without arguments
+                the help screen is displayed.
+
+--------------------------------------------------------------------------------
+version 0.1:
+[Oct 6 2015] - Finish the implementation.
