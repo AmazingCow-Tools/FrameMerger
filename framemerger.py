@@ -40,15 +40,17 @@
 ##                                  Enjoy :)                                  ##
 ##----------------------------------------------------------------------------##
 
-#COWTODO: Change the termcolor to cowtermcolor.
-
 ## Imports ##
 import os;
 import os.path;
 import sys;
 import getopt;
+
+## cowtermcolor isn't a standard package - So don't force the users to
+## have it, just disable colors.
 try:
-    from termcolor import colored;
+    import cowtermcolor;
+    from cowtermcolor import *;
 except Exception, e:
     def colored(msg, color):
         return msg;
@@ -306,7 +308,7 @@ class GUI(QWidget):
         images_len = len(self.__images_dir_text.text());
         output_len = len(self.__output_dir_text.text());
 
-        all_filled = (frame_len != 0) and (images_len != 0) and (output_len != 0);
+        all_filled = all([frame_len, images_len, output_len]);
         self.__run_button.setEnabled(all_filled);
 
 
@@ -484,8 +486,9 @@ class MergeProcess:
 ################################################################################
 class C:
     @staticmethod
-    def red(msg) :
-        return colored(msg, "red");
+    def fatal(msg) :
+        return cowtermcolor.red(msg) + cowtermcolor.reset();
+
     @staticmethod
     def green(msg) :
         return colored(msg, "green");
@@ -536,7 +539,7 @@ def print_version():
     exit(0);
 
 def print_fatal(msg):
-    print C.red("[FATAL]"), msg;
+    print C.fatal("[FATAL]"), msg;
     exit(1);
 
 
