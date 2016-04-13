@@ -46,6 +46,7 @@ import os.path;
 import sys;
 import getopt;
 import pdb;
+
 ## cowtermcolor isn't a standard package - So don't force the users to
 ## have it, just disable colors.
 try:
@@ -65,6 +66,7 @@ import pygame;
 #For GUI :)
 from PyQt4.QtCore import *
 from PyQt4.QtGui  import *
+
 
 ################################################################################
 ## Constants                                                                  ##
@@ -116,7 +118,7 @@ class Constants:
 
     #App.
     APP_NAME      = "frame-merger";
-    APP_VERSION   = "0.1.5";
+    APP_VERSION   = "0.2.0";
     APP_AUTHOR    = "N2OMatt <n2omatt@amazingcow.com>"
     APP_COPYRIGHT = "\n".join(("Copyright (c) 2015, 2016 - Amazing Cow",
                                "This is a free software (GPLv3) - Share/Hack it",
@@ -598,24 +600,31 @@ class C:
 ################################################################################
 def print_help():
     help = """Usage:
-  frame-merger [-hv] [-f <frame-path>] [-i <images-path>] [-o <output-path>]
-  frame-merger --gui
+  frame-merger [-hv]
+  frame-merger -f <frame-path> -i <images-path> -o <output-path> --jpg --no-colors
+  frame-merger --gui [-f <frame-path> -i <images-path> -o <output-path> --jpg]
 
 Options:
  *-h --help    : Show this screen.
  *-v --version : Show app version and copyright.
- *   --gui     : Run in graphical mode.
 
   -f --frame       <frame-path>  : Path for the frame image.
   -i --images-dir  <images-path> : Path for dir of images that will be merged.
   -o --output-path <output-path> : Path of the output dir.
-     --jpg                       : Force all output images to be jpg.
+
+     --gui       : Run in graphical mode. (If any other flags are given it will
+                   loaded in graphical mode too).
+
+     --jpg       : Force all output images to be jpg.
+     --no-colors : Disable the colored output.
 
 Notes:
   Options marked with * are exclusive, i.e. the frame-merger will run that
   and exit successfully after the operation.
 
   In command line mode the [-f -i -o] flags are required.
+
+  In GUI mode the [--no-colors] flag are ignored.
   """;
     print help;
     exit(0);
