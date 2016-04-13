@@ -52,6 +52,7 @@ try:
     import cowtermcolor;
     from cowtermcolor import *;
 
+    #We don't want the None to be a string.
     cowtermcolor.CONVERT_MODE = cowtermcolor.CONVERT_MODE_CONVERT_NONE_TYPE_TO_EMPTY_STR;
 
 except Exception, e:
@@ -69,24 +70,45 @@ from PyQt4.QtGui  import *
 ## Constants                                                                  ##
 ################################################################################
 class Constants:
-    #Flag.
+    #Flags.
+    #Exclusive
     FLAG_HELP             = "h", "help";
     FLAG_VERSION          = "v", "version";
     FLAG_GUI              = "" , "gui";
+    #Mandatory
     FLAG_FRAME_IMAGE_PATH = "f", "frame";
     FLAG_IMAGES_DIR_PATH  = "i", "images-dir";
     FLAG_OUTPUT_DIR_PATH  = "o", "output-dir";
+    #Optional
     FLAG_FORCE_JPG        =  "", "jpg";
+    FLAG_NO_COLORS        =  "", "no-colors"
 
-    ALL_FLAGS_SHORT = "hvf:i:o:";
+
+    ALL_FLAGS_SHORT = "".join([
+        #Exclusive
+        FLAG_HELP    [0],
+        FLAG_VERSION [0],
+        FLAG_GUI     [0],
+        #Mandatory
+        FLAG_FRAME_IMAGE_PATH [0] + ":",
+        FLAG_IMAGES_DIR_PATH  [0] + ":",
+        FLAG_OUTPUT_DIR_PATH  [0] + ":",
+        #Optional
+        FLAG_FORCE_JPG[0],
+        FLAG_NO_COLORS[0],
+    ]);
     ALL_FLAGS_LONG  = [
-        FLAG_HELP            [1],
-        FLAG_VERSION         [1],
-        FLAG_GUI             [1],
-        FLAG_FRAME_IMAGE_PATH[1] + "=",
-        FLAG_IMAGES_DIR_PATH [1] + "=",
-        FLAG_OUTPUT_DIR_PATH [1] + "=",
-        FLAG_FORCE_JPG       [1],
+        #Exclusive
+        FLAG_HELP    [1],
+        FLAG_VERSION [1],
+        FLAG_GUI     [1],
+        #Mandatory
+        FLAG_FRAME_IMAGE_PATH [1] + "=",
+        FLAG_IMAGES_DIR_PATH  [1] + "=",
+        FLAG_OUTPUT_DIR_PATH  [1] + "=",
+        #Optional
+        FLAG_FORCE_JPG[1],
+        FLAG_NO_COLORS[1],
     ];
 
     #Image formats.
@@ -208,7 +230,7 @@ class GUI(QWidget):
         ##            ROW 2 | [               ] ( ... ) |                     ##
         ##            ROW 3 | Images Dir Path           |                     ##
         ##            ROW 4 | [               ] ( ... ) |                     ##
-        ##            ROW 5 |  Ouput dir Path           |                     ##
+        ##            ROW 5 |  Output dir Path          |                     ##
         ##            ROW 6 | [               ] ( ... ) |                     ##
         ##            ROW 7 | (  Start Merge  ) [x] JPG |                     ##
         ##                  +---------------------------+                     ##
@@ -645,38 +667,38 @@ def main():
     except Exception, e:
         print_fatal(e);
 
+
     #Vars to hold the values of the non exclusive command line options.
     opt_frame_image_path = None;
     opt_images_dir_path  = None;
     opt_output_dir_path  = None;
     opt_save_in_jpg      = False;
+    opt_nocolors         = False;
 
     #Parse the options.
     for option in options[0]:
         key, value = option;
         key = key.lstrip("-");
 
-        #Help/Version. - EXCLUSIVE OPTIONS : Run and quit.
-        if  (key in Constants.FLAG_HELP   ): print_help();
-        elif(key in Constants.FLAG_VERSION): print_version();
+        #Help / Version / GUI. - EXCLUSIVE OPTIONS : Run and quit.
+        if  (key in Constants.FLAG_HELP    ): print_help();
+        elif(key in Constants.FLAG_VERSION ): print_version();
+        elif(key in Constants.FLAG_GUI     ): GUI.run(); exit(0);
 
-        #GUI - EXCLUSIVE OPTION : Run and quit.
-        elif(key in Constants.FLAG_GUI):
-            GUI.run();
-            exit(0);
+        #Frame / Images / Output - MANDATORY OPTIONS : Grab the info to use later.
+        elif(key in Constants.FLAG_FRAME_IMAGE_PATH ): opt_frame_image_path = value;
+        elif(key in Constants.FLAG_IMAGES_DIR_PATH  ): opt_images_dir_path  = value;
+        elif(key in Constants.FLAG_OUTPUT_DIR_PATH  ): opt_output_dir_path  = value;
 
-        #NON EXCLUSIVE OPTIONS : Grab the info to use later.
-        #Frame and Images path.
-        elif(key in Constants.FLAG_FRAME_IMAGE_PATH):
-             opt_frame_image_path = value;
-        elif(key in Constants.FLAG_IMAGES_DIR_PATH):
-             opt_images_dir_path = value;
-        #Output path.
-        elif(key in Constants.FLAG_OUTPUT_DIR_PATH):
-            opt_output_dir_path = value;
-        #Save in JPG.
-        elif(key in Constants.FLAG_FORCE_JPG):
-            opt_save_in_jpg = True;
+        #JPG / No colors - OPTIONAL OPTIONS
+        elif(key in Constants.FLAG_FORCE_JPG): opt_save_in_jpg = True;
+        elif(key in Constants.FLAG_NO_COLORS): opt_nocolors    = True;
+
+
+    #Setup the colors.
+    if(opt_nocolors):
+        cowtermcolor.COLOR_MODE = cowtermcolor.COLOR_MODE_NEVER;
+
 
     #Will run in text mode.
     run(opt_frame_image_path,
@@ -684,6 +706,11 @@ def main():
         opt_output_dir_path,
         opt_save_in_jpg);
 
+
+
+################################################################################
+## Script Initialization                                                      ##
+################################################################################
 if(__name__ == "__main__"):
     main();
 
