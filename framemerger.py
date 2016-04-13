@@ -132,9 +132,16 @@ class GUI(QWidget):
     ## Static Run Method                                                      ##
     ############################################################################
     @staticmethod
-    def run():
+    def run(frame_path  = "",
+            images_path = "",
+            output_path = "",
+            force_jpg   = False):
+
+        #Never put term colors on gui.
+        cowtermcolor.COLOR_MODE = cowtermcolor.COLOR_MODE_NEVER;
+
         app = QApplication(sys.argv);
-        gui = GUI();
+        gui = GUI(frame_path, images_path, output_path, force_jpg);
         gui.show();
         sys.exit(app.exec_())
 
@@ -142,7 +149,11 @@ class GUI(QWidget):
     ############################################################################
     ## CTOR                                                                   ##
     ############################################################################
-    def __init__(self):
+    def __init__(self, frame_path  = "",
+                       images_path = "",
+                       output_path = "",
+                       force_jpg   = False):
+
         QWidget.__init__(self);
 
         #UI Elements.
@@ -163,13 +174,19 @@ class GUI(QWidget):
         #Layout.
         self.__root_layout = None;
         #Merge Progress Dialog.
-        self.__progess_dialog = None;
+        self.__progress_dialog = None;
 
         #The Merge Process object.
         self.__merge_process  = None;
 
         #Initialize the UI.
         self.init_ui();
+
+        #Set the Default values.
+        self.__frame_image_text.setText     (frame_path );
+        self.__images_dir_text.setText      (images_path);
+        self.__output_dir_text.setText      (output_path);
+        self.__force_jpg_checkbox.setChecked(force_jpg  );
 
 
     ############################################################################
@@ -319,12 +336,16 @@ class GUI(QWidget):
         #This except block will catch all types of exceptions generated
         #by the try block above and will show them in a "nice" Error Dialog
         #to user.
-        #COWTODO: Handle only ValueError exceptions - Paths malformed \
-        #         and the mkdir exception.
-        except Exception, e:
+        except ValueError, e:
+            QMessageBox.critical(self,
+                                 "Frame Merger",  #Just put the first part of,
+                                 e.args[0],       #the error because the path
+                                 QMessageBox.Ok); #is obvious to user
+        except OSError, e:
+            msg = "{} - {}".format(e.strerror, e.filename);
             QMessageBox.critical(self,
                                  "Frame Merger",
-                                 e.args[0],
+                                 msg,
                                  QMessageBox.Ok);
 
 
@@ -355,12 +376,19 @@ class GUI(QWidget):
         self.__merge_process.init();
 
     def __create_and_init_process_dialog(self):
+        if(self.__progress_dialog is not None):
+            self.__progress_dialog.destroy();
+            self.__progress_dialog = None;
+
         self.__progress_dialog = QProgressDialog("Merging Photos",
                                                  "Cancel",
                                                  0,
                                                  self.__merge_process.get_images_count(),
                                                  self);
+
         self.__progress_dialog.setWindowModality(Qt.WindowModal);
+        self.__progress_dialog.forceShow();
+
 
 
 ################################################################################
@@ -672,6 +700,7 @@ def main():
     opt_frame_image_path = None;
     opt_images_dir_path  = None;
     opt_output_dir_path  = None;
+    opt_gui              = False;
     opt_save_in_jpg      = False;
     opt_nocolors         = False;
 
@@ -683,7 +712,7 @@ def main():
         #Help / Version / GUI. - EXCLUSIVE OPTIONS : Run and quit.
         if  (key in Constants.FLAG_HELP    ): print_help();
         elif(key in Constants.FLAG_VERSION ): print_version();
-        elif(key in Constants.FLAG_GUI     ): GUI.run(); exit(0);
+        elif(key in Constants.FLAG_GUI     ): opt_gui = True;
 
         #Frame / Images / Output - MANDATORY OPTIONS : Grab the info to use later.
         elif(key in Constants.FLAG_FRAME_IMAGE_PATH ): opt_frame_image_path = value;
@@ -699,6 +728,13 @@ def main():
     if(opt_nocolors):
         cowtermcolor.COLOR_MODE = cowtermcolor.COLOR_MODE_NEVER;
 
+    #Will run in GUI.
+    if(opt_gui):
+        GUI.run(opt_frame_image_path,
+                opt_images_dir_path,
+                opt_output_dir_path,
+                opt_save_in_jpg);
+        exit(0);
 
     #Will run in text mode.
     run(opt_frame_image_path,
