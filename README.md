@@ -108,6 +108,32 @@ This project uses / depends on:
 [cowtermcolor](http://www.github.com/AmazingCow/AmazingCore-Libs/cowtermcolor_py)
 package to coloring the terminal.
 
+* [pygame](http://www.pygame.org) as a backend to image manipulations.
+
+* [PyQt4](http://www.riverbankcomputing.com/software/pyqt/download) for the 
+GUI system.
+
+
+On debian based systems you can just:
+
+``` bash
+  #To install cowtermcolor - Check its repo to other install options too.
+  $ wget http://opensource.amazingcow.com/cowtermcolor/dist/latest/install.sh | bash 
+
+  #To install pygame.
+  $ sudo apt-get install pygame;
+
+  #To install PyQt4.
+  $ sudo apt-get install python-qt4
+
+```
+
+<br>
+
+As convenience we add a ```get_deps.sh``` script to get the dependencies in 
+a debian based system. 
+
+
 
 
 <!-- ####################################################################### -->
@@ -162,10 +188,12 @@ create an issue here in Github.
 * CHANGELOG.txt
 * COPYING.txt
 * framemerger.py
+* get_deps.sh
 * Makefile
 * OLDREADME.md
 * README.md
 * TODO.txt
+
 
 
 
