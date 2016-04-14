@@ -47,25 +47,47 @@ import sys;
 import getopt;
 import pdb;
 
-## cowtermcolor isn't a standard package - So don't force the users to
-## have it, just disable colors.
+
+################################################################################
+## Don't let the standard import error to users - Instead show a              ##
+## 'nice' error screen describing the error and how to fix it.                ##
+################################################################################
+def __import_error_message_print(pkg_name, pkg_url):
+    print "Sorry, "
+    print "frame-merger depends on {} package.".format(pkg_name);
+    print "Visit {} to get it.".format(pkg_url);
+    print "Or checkout the README.md to learn other ways to install {}.".format(pkg_name);
+    exit(1);
+
+
+## cowtermcolor ##
 try:
     import cowtermcolor;
     from cowtermcolor import *;
+except ImportError, e:
+    __import_error_message_print(
+        "cowtermcolor",
+        "http//opensource.amazingcow.com/cowtermcolor.html");
 
-    #We don't want the None to be a string.
-    cowtermcolor.CONVERT_MODE = cowtermcolor.CONVERT_MODE_CONVERT_NONE_TYPE_TO_EMPTY_STR;
-
-except Exception, e:
-    def colored(msg, color):
-        return msg;
-
+## pygame ##
 #COWTODO: Today we're using pygame to merge the photos. \
 #         But the desired is to use ImageMagick...
-import pygame;
+try:
+    import pygame;
+except ImportError, e:
+    __import_error_message_print(
+        "pygame",
+        "http//www.pygame.org");
+
 #For GUI :)
-from PyQt4.QtCore import *
-from PyQt4.QtGui  import *
+try:
+    from PyQt4.QtCore import *
+    from PyQt4.QtGui  import *
+except ImportError, e:
+    __import_error_message_print(
+        "PyQt4",
+        ""); #COWTODO: Add PyQT url.
+
 
 
 ################################################################################
@@ -695,6 +717,9 @@ def run(frame_path, images_path, output_path, save_in_jpg):
 ## Script Initialization                                                      ##
 ################################################################################
 def main():
+    #We don't want the None to be a string.
+    cowtermcolor.CONVERT_MODE = cowtermcolor.CONVERT_MODE_CONVERT_NONE_TYPE_TO_EMPTY_STR;
+
     if(len(sys.argv[1:]) == 0):
         print_help();
 
