@@ -1,6 +1,21 @@
 ================================================================================
 | Version 0.2.x                                                                |
 ================================================================================
+[version 0.2.1] - Apr 14 2016
+-- General --
+    Update the README to consistency with other AmazingCow's READMEs.
+
+-- Source --
+    Update the version numbers.
+
+-- Info Files --
+    README.md
+      - Update the content on BUGS section.
+      - Add Environment and Files section.
+      - Change title of Files to Source Files.
+
+
+--------------------------------------------------------------------------------
 [version 0.2.0] -  Apr 13 2016
 -- General --
     - Start using the cowtermcolor package for coloring. This enable us
