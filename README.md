@@ -27,6 +27,7 @@ The output format is PNG (default) or JPG (with ```--jpg``` flag).
 As usual, you are **very welcomed** to **share** and **hack** it.
 
 
+
 <!-- ####################################################################### -->
 <!-- ####################################################################### -->
 
@@ -74,7 +75,6 @@ Notes:
   because running application again it will load the faulty image correctly.   
   Currently we don't know how to solve this.     
   Sorry :(
-
 
 
 
@@ -135,6 +135,14 @@ a debian based system.
 
 
 
+<!-- ####################################################################### -->
+<!-- ####################################################################### -->
+
+## Environment and Files: 
+
+```frame-merger``` do not create / need any other files or environment vars.
+
+
 
 <!-- ####################################################################### -->
 <!-- ####################################################################### -->
@@ -164,7 +172,6 @@ That's gonna give you all things to do :D.
 
 
 
-
 <!-- ####################################################################### -->
 <!-- ####################################################################### -->
 
@@ -173,16 +180,15 @@ That's gonna give you all things to do :D.
 We strive to make all our code the most bug-free as possible - But we know 
 that few of them can pass without we notice ;).
 
-Please if you find any bug report to [bugs_opensource@amazingcow.com]() and/or
-create an issue here in Github.
-
+Please if you find any bug report to [bugs_opensource@amazingcow.com]() 
+with the name of this project and/or create an issue here in Github.
 
 
 
 <!-- ####################################################################### -->
 <!-- ####################################################################### -->
 
-## Files:
+## Source Files:
 
 * AUTHORS.txt
 * CHANGELOG.txt
@@ -193,7 +199,6 @@ create an issue here in Github.
 * OLDREADME.md
 * README.md
 * TODO.txt
-
 
 
 
