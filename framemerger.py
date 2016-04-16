@@ -62,7 +62,6 @@ def __import_error_message_print(pkg_name, pkg_url):
 
 ## cowtermcolor ##
 try:
-    import cowtermcolor;
     from cowtermcolor import *;
 except ImportError, e:
     __import_error_message_print(
@@ -162,7 +161,7 @@ class GUI(QWidget):
             force_jpg   = False):
 
         #Never put term colors on gui.
-        cowtermcolor.COLOR_MODE = cowtermcolor.COLOR_MODE_NEVER;
+        ColorMode.mode = ColorMode.NEVER;
 
         app = QApplication(sys.argv);
         gui = GUI(frame_path, images_path, output_path, force_jpg);
@@ -510,13 +509,13 @@ class MergeProcess:
             raise ValueError("Frame Path cannot be empty.");
         elif(not os.path.isfile(self.__frame_path)):
             raise ValueError("Frame Path is not a valid file",
-                             C.path(self.__frame_path));
+                             ColorPath(self.__frame_path));
         ##Images Path.
         if(self.__images_path is None or self.__images_path == ""):
             raise ValueError("Images Dir Path cannot be empty.");
         elif(not os.path.isdir(self.__images_path)):
             raise ValueError("Images Dir Path is not a valid directory",
-                             C.path(self.__images_path));
+                             ColorPath(self.__images_path));
         ##Output Path.
         if(self.__output_path is None or self.__images_path == ""):
             raise ValueError("Output Dir Path cannot be empty.");
@@ -527,7 +526,7 @@ class MergeProcess:
         except OSError, e:
             #Prevent the File Exists to be raised.
             if(e.errno != os.errno.EEXIST):
-                e.filename = C.path(e.filename);
+                e.filename = ColorPath(e.filename);
                 raise e;
 
         #Here we have:
@@ -548,7 +547,7 @@ class MergeProcess:
         #and for us to report it.
         if(not os.access(self.__output_path, os.W_OK)):
             raise ValueError("Output Dir Path is not writable.",
-                             C.path(self.__output_path));
+                             ColorPath(self.__output_path));
 
     def __canonize_path(self, path):
         path = path.strip(" ");
@@ -595,28 +594,13 @@ class MergeProcess:
 
 
 ################################################################################
-## Color Functions                                                            ##
+## Color Stuff                                                                ##
 ################################################################################
-class C:
-    @staticmethod
-    def fatal(msg) :
-        return cowtermcolor.red(msg) + cowtermcolor.reset();
-
-    @staticmethod
-    def path(msg) :
-        return cowtermcolor.magenta(msg) + cowtermcolor.reset();
-
-    @staticmethod
-    def number(msg) :
-        return cowtermcolor.blue(msg) + cowtermcolor.reset();
-
-    @staticmethod
-    def correct(msg) :
-        return cowtermcolor.green(msg) + cowtermcolor.reset();
-
-    @staticmethod
-    def processing(msg) :
-        return cowtermcolor.yellow(msg) + cowtermcolor.reset();
+ColorFatal      = Color(RED);
+ColorPath       = Color(MAGENTA);
+ColorNumber     = Color(BLUE);
+ColorCorrect    = Color(GREEN);
+ColorProcessing = Color(YELLOW);
 
 
 ################################################################################
@@ -662,7 +646,7 @@ def print_version():
     exit(0);
 
 def print_fatal(msg):
-    print C.fatal("[FATAL]"), msg;
+    print ColorFatal("[FATAL]"), msg;
     exit(1);
 
 
@@ -681,7 +665,7 @@ def run(frame_path, images_path, output_path, save_in_jpg):
 
         merge_process.init();
 
-        images_found = C.number(merge_process.get_images_count());
+        images_found = ColorNumber(merge_process.get_images_count());
         print "Images found: ({})".format(images_found);
 
         while(merge_process.has_image_to_merge()):
@@ -691,17 +675,17 @@ def run(frame_path, images_path, output_path, save_in_jpg):
             padding = len(str(total_number)) - len(str(current_number));
 
             fmt = "{} ({}) {} ({})"
-            print fmt.format(C.processing("Merging image"),
-                             C.number    (("0" * padding) + str(current_number)),
-                             C.processing("of"),
-                             C.number    (total_number)),
+            print fmt.format(ColorProcessing("Merging image"),
+                             ColorNumber    (("0" * padding) + str(current_number)),
+                             ColorProcessing("of"),
+                             ColorNumber    (total_number)),
 
 
             merge_process.merge();
 
-            print C.correct("[OK]");
+            print ColorCorrect("[OK]");
 
-        print C.correct("Done...");
+        print ColorCorrect("Done...");
 
 
     #COWTODO: Comment
@@ -710,7 +694,7 @@ def run(frame_path, images_path, output_path, save_in_jpg):
     except OSError, e:
         print_fatal("Errno {} - {} - {}".format(e.errno,
                                                 e.strerror,
-                                                C.path(e.filename)));
+                                                ColorPath(e.filename)));
 
 
 ################################################################################
@@ -718,7 +702,7 @@ def run(frame_path, images_path, output_path, save_in_jpg):
 ################################################################################
 def main():
     #We don't want the None to be a string.
-    cowtermcolor.CONVERT_MODE = cowtermcolor.CONVERT_MODE_CONVERT_NONE_TYPE_TO_EMPTY_STR;
+    ConvertMode.mode = ConvertMode.NONE_TYPE_TO_EMPTY_STR;
 
     if(len(sys.argv[1:]) == 0):
         print_help();
@@ -762,7 +746,7 @@ def main():
 
     #Setup the colors.
     if(opt_nocolors):
-        cowtermcolor.COLOR_MODE = cowtermcolor.COLOR_MODE_NEVER;
+        ColorMode.mode = ColorMode.NEVER;
 
     #Will run in GUI.
     if(opt_gui):
