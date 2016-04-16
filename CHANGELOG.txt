@@ -1,6 +1,16 @@
 ================================================================================
 | Version 0.2.x                                                                |
 ================================================================================
+[version 0.2.2] - Apr 16 2016
+-- General --
+    Change the coloring stuff to the new cowtermcolor api.
+
+-- Source --
+    - Update the version numbers.
+    - Change the coloring stuff to the new cowtermcolor api.
+
+
+--------------------------------------------------------------------------------
 [version 0.2.1] - Apr 14 2016
 -- General --
     Update the README to consistency with other AmazingCow's READMEs.
