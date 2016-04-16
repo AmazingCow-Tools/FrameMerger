@@ -11,14 +11,14 @@
 
 ```frame-merger``` - Image merging tool.
 
-```frame-merge``` is a small tool to merge one image (_frame_) into several 
+```frame-merger``` is a small tool to merge one image (_frame_) into several 
 other images located (_source_) in a directory.
 
 The frame image must be a PNG file - (Since the frame "must" support transparency)
 but the source images can be any image format supported by 
 [pygame](http://www.pygame.org).
 
-The output of ```frame-merge``` is the set of merged images in the specified 
+The output of ```frame-merger``` is the set of merged images in the specified 
 output directory.    
 The output format is PNG (default) or JPG (with ```--jpg``` flag).
 
