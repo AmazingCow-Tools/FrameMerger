@@ -1,6 +1,25 @@
 ================================================================================
 | Version 0.2.x                                                                |
 ================================================================================
+[version 0.2.3] - Apr 22, 2016
+-- General --
+    - Update the README.
+    - Remove the get_deps.sh.
+
+-- Source --
+    - Update the version numbers.
+    - Change the COWTODO to COWNOTE.
+    - Add the PyQt4 Link.
+
+-- Info Files --
+    README
+    - Fix the wrong links.
+    - Update the Dependencies section.
+
+-- Other Files --
+    Remove the get_deps.sh.
+
+--------------------------------------------------------------------------------
 [version 0.2.2] - Apr 16 2016
 -- General --
     Change the coloring stuff to the new cowtermcolor api.

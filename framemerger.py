@@ -69,7 +69,7 @@ except ImportError, e:
         "http//opensource.amazingcow.com/cowtermcolor.html");
 
 ## pygame ##
-#COWTODO: Today we're using pygame to merge the photos. \
+#COWNOTE: Today we're using pygame to merge the photos. \
 #         But the desired is to use ImageMagick...
 try:
     import pygame;
@@ -85,7 +85,7 @@ try:
 except ImportError, e:
     __import_error_message_print(
         "PyQt4",
-        ""); #COWTODO: Add PyQT url.
+        "http://www.riverbankcomputing.com/software/pyqt/download");
 
 
 
