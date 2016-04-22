@@ -33,7 +33,7 @@ As usual, you are **very welcomed** to **share** and **hack** it.
 
 ## Usage:
 
-``` bash
+``` 
 frame-merger [-hv]
 frame-merger -f <frame-path> -i <images-path> -o <output-path> --jpg --no-colors
 frame-merger --gui [-f <frame-path> -i <images-path> -o <output-path> --jpg]
